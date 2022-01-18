@@ -22,12 +22,23 @@ function App() {
   const stopGame = () => {
     setState({ kind: "no_game" });
   };
-  switch (state.kind) {
-    case "no_game":
-      return <NoGame startGame={startGame} />;
-    case "playing":
-      return <Playing length={state.length} stopGame={stopGame} />;
-  }
+  return (
+    <div className="page">
+      <div className="page__wrapper">
+        <section className="section section--full section--white">
+          <div className="container">
+            <div className="App-container">
+              {state.kind === "no_game" ? (
+                <NoGame startGame={startGame} />
+              ) : (
+                <Playing length={state.length} stopGame={stopGame} />
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 }
 
 export default App;
