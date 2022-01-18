@@ -79,6 +79,41 @@ function guessesConstraints(guesses: Guess[]): CharConstraints {
   return result;
 }
 
+interface CharCount {
+  [char: string]: number;
+}
+
+function countUnconstrainedCharacters(
+  words: string[],
+  constraints: CharConstraints
+): CharCount {
+  const result: { [char: string]: number } = {};
+  for (const word of words) {
+    for (const char of word) {
+      if (constraints[char] !== undefined) {
+        continue;
+      }
+      if (result[char] === undefined) {
+        result[char] = 1;
+      } else {
+        result[char]++;
+      }
+    }
+  }
+  return result;
+}
+
+function wordScore(word: string, charCount: CharCount): number {
+  const wordChars = [...new Set(word.split(""))];
+  let result = 0;
+  for (const wordChar of wordChars) {
+    if (charCount[wordChar] !== undefined) {
+      result += charCount[wordChar];
+    }
+  }
+  return result;
+}
+
 const wordFilter = (constraints: CharConstraints) => (word: string) => {
   for (const char of Object.keys(constraints)) {
     const charConstraint = constraints[char];
@@ -115,10 +150,17 @@ export function Hint({ guesses, length }: HintProps) {
 
   const constraints = guessesConstraints(guesses);
 
-  const hints = words
+  const passingWords = words
     .filter((word) => word.length === length)
-    .filter(wordFilter(constraints))
-    .slice(0, 10);
+    .filter(wordFilter(constraints));
+
+  const charCounts = countUnconstrainedCharacters(passingWords, constraints);
+  const wordScores: [string, number][] = passingWords.map((word) => [
+    word,
+    wordScore(word, charCounts),
+  ]);
+  const sortedWords = wordScores.sort((a, b) => b[1] - a[1]);
+  const hints = sortedWords.slice(0, 10).map(w => w[0]);
 
   return (
     <>
