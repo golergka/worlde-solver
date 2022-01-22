@@ -1,3 +1,9 @@
+# Worlde solver
+
+**Deployed to vercel here: https://worlde-solver.vercel.app**
+
+This is a WIP app that helps you in solving the WORDLE puzzle.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
