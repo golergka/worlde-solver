@@ -2,6 +2,7 @@ import React from "react";
 import { Guess } from "../model/Guess";
 import { GuessCharKind } from "../model/GuessCharKind";
 import { nextGuessCharkind } from "../model/nextGuessCharkind";
+import { GuessChar } from "../model/GuessChar";
 
 export function useGuesses(): {
   guesses: Guess[];
@@ -11,10 +12,16 @@ export function useGuesses(): {
 } {
   const [guesses, setGuesses] = React.useState<Guess[]>([]);
   const addGuess = (newGuess: string) => {
-    const guess = newGuess.split("").map((char) => ({
-      char,
-      kind: GuessCharKind.Unknown,
-    }));
+    const guess = newGuess.split("").map((char, charIndex): GuessChar => {
+      if (guesses.length === 0) {
+        return { char, kind: GuessCharKind.Unknown };
+      }
+      const prevChar = guesses[guesses.length - 1][charIndex];
+      return {
+        char,
+        kind: prevChar.char === char ? prevChar.kind : GuessCharKind.Unknown,
+      };
+    });
     setGuesses(guesses.concat([guess]));
   };
   const deleteGuess = (index: number) => {

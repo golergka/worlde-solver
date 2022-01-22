@@ -1,5 +1,7 @@
 import React from "react";
+import { useDictionary } from "../hooks/useDictionary";
 import "./App.css";
+import { DictionaryChooser } from "./DictionaryChooser";
 import { NoGame } from "./NoGame";
 import { Playing } from "./Playing";
 
@@ -22,16 +24,22 @@ function App() {
   const stopGame = () => {
     setState({ kind: "no_game" });
   };
+  const dictionaryData = useDictionary();
   return (
     <div className="page">
       <div className="page__wrapper">
         <section className="section section--full section--white">
           <div className="container">
             <div className="App-container">
+              <DictionaryChooser data={dictionaryData} />
               {state.kind === "no_game" ? (
                 <NoGame startGame={startGame} />
               ) : (
-                <Playing length={state.length} stopGame={stopGame} />
+                <Playing
+                  length={state.length}
+                  stopGame={stopGame}
+                  dictionaryState={dictionaryData.state}
+                />
               )}
             </div>
           </div>

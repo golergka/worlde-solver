@@ -1,11 +1,12 @@
 import { Guess } from "../model/Guess";
-import dictionary from "../dictionary";
 import React from "react";
 import { GuessCharKind } from "../model/GuessCharKind";
+import { DictionaryState } from "../hooks/useDictionary";
 
 interface HintProps {
   guesses: Guess[];
   length: number;
+  dictionaryState: DictionaryState;
 }
 
 interface CharConstraint {
@@ -138,15 +139,12 @@ const wordFilter = (constraints: CharConstraints) => (word: string) => {
   return true;
 };
 
-export function Hint({ guesses, length }: HintProps) {
-  const [words, setWords] = React.useState<string[] | undefined>(undefined);
-  React.useEffect(() => {
-    dictionary.then(setWords);
-  }, []);
-
-  if (words === undefined) {
+export function Hint({ guesses, length, dictionaryState }: HintProps) {
+  if (dictionaryState.state !== "ready-dictionary") {
     return <p>Loading dictionary...</p>;
   }
+
+  const words = dictionaryState.dictionary;
 
   const constraints = guessesConstraints(guesses);
 
@@ -160,7 +158,9 @@ export function Hint({ guesses, length }: HintProps) {
     wordScore(word, charCounts),
   ]);
   const sortedWords = wordScores.sort((a, b) => b[1] - a[1]);
-  const hints = sortedWords.slice(0, 10).map(w => w[0]);
+  const hints = sortedWords.slice(0, 10).map((w) => w[0]);
+
+  console.log({ constraints, passingWords, charCounts, sortedWords });
 
   return (
     <>
@@ -170,6 +170,7 @@ export function Hint({ guesses, length }: HintProps) {
           <li key={word}>{word}</li>
         ))}
       </ul>
+      <i>Dictionary loaded with {words.length} words</i>
     </>
   );
 }
